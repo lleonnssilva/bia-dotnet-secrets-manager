@@ -1,0 +1,38 @@
+﻿version: "3.4"
+
+services:
+  server:
+    container_name: bia
+    ports:
+      - 3001:8080
+    links:
+      - database
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+    #Local
+      ConnectionStrings__DefaultConnection: User ID=postgres;Password=postgres;Server=database;Port=5432;Database=bia; Pooling=true;
+    #RDS
+      # ConnectionStrings__DefaultConnection: User ID=postgres;Password=senha_rds;Server=host_rds;Port=5432;Database=bia; Pooling=true;
+    #Bastion Host X RDS
+      # ConnectionStrings__DefaultConnection: User ID=postgres;Password=senha_rds;Server=localhost;Port=5434;Database=bia; Pooling=true; 
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+
+  database:
+     image: postgres:latest
+     container_name: database
+     environment:
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=postgres
+       - POSTGRES_DB=bia
+     ports:
+       - "5433:5432"
+     restart: always
+     volumes:
+       - db:/var/lib/postgresql/data
+
+volumes:
+  db:
+    
